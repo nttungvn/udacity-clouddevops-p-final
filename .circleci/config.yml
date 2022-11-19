@@ -76,6 +76,7 @@ jobs:
           resource-file-path: ".circleci/files/service.yml"
           get-rollout-status: true
           show-kubectl-command: true
+          
   smoke-test:
     docker:
       - image: cimg/python:3.11.0
