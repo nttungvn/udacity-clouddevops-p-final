@@ -80,6 +80,10 @@ jobs:
     docker:
       - image: cimg/python:3.11.0
     steps:
+      - aws-eks/update-kubeconfig-with-authenticator:
+          cluster-name: eks-udacity
+          aws-region: ${AWS_REGION}
+          install-kubectl: true
       - run:
           name: smoke test.
           command: |
@@ -92,7 +96,6 @@ jobs:
             else
               exit 1
             fi
-
 workflows:
   default:
     jobs:
