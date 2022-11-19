@@ -106,3 +106,6 @@ workflows:
       - deploy_application:
           requires:
             - "build_image"
+      - smoke-test:
+          requires:
+            - "deploy_application"
