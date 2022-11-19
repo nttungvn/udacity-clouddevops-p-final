@@ -53,7 +53,7 @@ jobs:
       - checkout
       - aws-cli/setup
       - aws-eks/create-cluster:
-          cluster-name: eks-udacity
+          cluster-name: eks-udacityp5
           aws-region: $AWS_REGION
           node-type:  t2.micro
           nodes-min:  2
@@ -64,7 +64,7 @@ jobs:
     steps:
       - checkout
       - aws-eks/update-kubeconfig-with-authenticator:
-          cluster-name: eks-udacity
+          cluster-name: eks-udacityp5
           aws-region: ${AWS_REGION}
           install-kubectl: true
       - kubernetes/create-or-update-resource:
@@ -81,7 +81,7 @@ jobs:
       - image: cimg/python:3.11.0
     steps:
       - aws-eks/update-kubeconfig-with-authenticator:
-          cluster-name: eks-udacity
+          cluster-name: eks-udacityp5
           aws-region: ${AWS_REGION}
           install-kubectl: true
       - run:
@@ -109,6 +109,7 @@ workflows:
       - deploy_application:
           requires:
             - "build_image"
+            - "build_infras"
       - smoke-test:
           requires:
             - "deploy_application"
