@@ -76,6 +76,22 @@ jobs:
           resource-file-path: ".circleci/files/service.yml"
           get-rollout-status: true
           show-kubectl-command: true
+  smoke-test:
+    docker:
+      - image: cimg/python:3.11.0
+    steps:
+      - run:
+          name: smoke test.
+          command: |
+            URL=$(kubectl describe services udacityp5 | grep "LoadBalancer Ingress" | awk '{print $3}'")
+            echo $URL
+            if curl -s $URL | grep "Tung"
+            then
+                # Change this to 0 after the job fails
+              exit 0
+            else
+              exit 1
+            fi
 
 workflows:
   default:
