@@ -78,5 +78,7 @@ workflows:
     jobs:
       # - build
       # - build_infras
-      # - build_image
-      - deploy_application
+      - build_image
+      - deploy_application:
+          requires:
+            - "build_image"
