@@ -34,7 +34,7 @@ jobs:
           . venv/bin/activate
           make lint 
   build_image:
-    executor: docker
+    executor: docker/docker
     steps:
       - setup_remote_docker
       - checkout
