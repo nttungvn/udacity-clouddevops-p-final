@@ -42,8 +42,10 @@ jobs:
       - docker/check
       - docker/build:
           image: tungntvn/udacityp5
+          tag: latest
       - docker/push:
           image: tungntvn/udacityp5
+          tag: latest
   build_infras:
     docker:
       - image: cimg/python:3.11.0
