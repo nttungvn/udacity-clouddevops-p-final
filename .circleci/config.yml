@@ -63,6 +63,7 @@ jobs:
       - checkout
       - aws-eks/update-kubeconfig-with-authenticator:
           cluster-name: eks-udacity
+          aws-region: ${AWS_REGION}
           install-kubectl: true
       - kubernetes/create-or-update-resource:
           resource-file-path: "files/deployment.yaml"
