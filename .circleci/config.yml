@@ -1,7 +1,6 @@
 version: 2.1
 orbs:
   aws-eks: circleci/aws-eks@2.2.0
-  kubernetes: circleci/kubernetes@0.3.0
   aws-cli: circleci/aws-cli@3.1
   docker: circleci/docker@2.1.2
 jobs:         
@@ -42,7 +41,7 @@ jobs:
       - docker/check
       - docker/build:
           image: tungntvn/udacityp5
-      - docker/oush:
+      - docker/push:
           image: tungntvn/udacityp5
   build_infras:
     docker:
