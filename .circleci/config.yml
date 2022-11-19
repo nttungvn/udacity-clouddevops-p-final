@@ -1,88 +1,37 @@
 version: 2.1
 
-commands:
-  destroy-environment:
-    description: Destroy cloudformation stacks given a workflow ID.
-    parameters:
-      workflow_id:
-          type: string   
-    steps:
-      - run:
-          name: Destroy environment
-          when: on_fail
-          command: |
-            aws cloudformation delete-stack --stack-name clouddevops-<< parameters.workflow_id >>
-
 jobs:         
-  deploy-infrastructure:
+  build:
     docker:
-      - image: amazon/aws-cli
-    steps:
-      - checkout
-      - run:
-          name: Install tar utility
-          command: |
-            yum install -y tar gzip
-      - run:
-          name: Ensure back-end infrastructure exists
-          command: |
-            aws cloudformation deploy \
-              --template-file .circleci/files/backend.yml \
-              --stack-name clouddevops-${CIRCLE_WORKFLOW_ID:0:7} \
-              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7} \
-              --tags project=udapeople \
-              --region us-east-1 
-      - run:
-          name: Add back-end ip to ansible inventory
-          command: |
-            aws --region us-east-1 ec2 describe-instances \
-            --filters "Name=instance-state-name,Values=running" "Name=tag:Name,Values=clouddevops-${CIRCLE_WORKFLOW_ID:0:7}" \
-            --query 'Reservations[*].Instances[*].[PublicIpAddress]' \
-            --output text >> ~/inventory.txt
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - "inventory.txt"
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+    # Use the same Docker base as the project
+    - image: python:3.7.3-stretch
 
-  configure-infrastructure:
-    docker:
-      - image: python
+    working_directory: ~/repo
+
     steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - "e9:bb:98:2d:68:3f:23:11:ab:50:5d:18:a8:03:4c:10"
-      - run:
-          name: install ansible
-          command: |
-            pip install ansible
-      - run:
-          name: install awscli
-          command: |
-            pip install awscli
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Echo inventory
-          command: cat ~/inventory.txt
-      - run:
-          name: Run playbook and configure server
-          command: |
-            cd .circleci/ansible && ansible-playbook -i ~/inventory.txt main.yml
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-    
+    - checkout
+    - run:
+        name: install dependencies
+        command: |
+          python3 -m venv venv
+          . venv/bin/activate
+          make install
+          # Install hadolint
+          wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
+          chmod +x /bin/hadolint
+    - save_cache:
+        paths:
+          - ./venv
+        key: v1-dependencies-{{ checksum "requirements.txt" }}
+
+    # run lint!
+    - run:
+        name: run lint
+        command: |
+          . venv/bin/activate
+          make lint 
+
 workflows:
-  deault:
+  default:
     jobs:
-      - deploy-infrastructure:
-          filters:
-            branches:
-              only: 
-                - main
-      - configure-infrastructure:
-          requires:
-            - "deploy-infrastructure"
-      
+      - build
