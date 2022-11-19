@@ -100,9 +100,9 @@ workflows:
   default:
     jobs:
       - lint
-      # - build_infras:
-      #     requires:
-      #       - "lint"
+      - build_infras:
+          requires:
+            - "lint"
       - build_image:
           requires:
             - "lint"
