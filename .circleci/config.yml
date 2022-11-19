@@ -74,7 +74,6 @@ jobs:
           show-kubectl-command: true
       - kubernetes/create-or-update-resource:
           resource-file-path: ".circleci/files/service.yml"
-          get-rollout-status: true
           show-kubectl-command: true
 
   smoke-test:
