@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: udacityp5
+spec:
+  type: LoadBalancer
+  selector:
+    app: udacityp5
+  ports:
+  - port: 80
+    targetPort: 80

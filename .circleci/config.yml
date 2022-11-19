@@ -5,7 +5,7 @@ orbs:
   docker: circleci/docker@2.1.2
   kubernetes: circleci/kubernetes@1.3.1
 jobs:         
-  test_dockerfile:
+  lint:
     docker:
     # Use the same Docker base as the project
     - image: python:3.7.3-stretch
@@ -72,13 +72,21 @@ jobs:
           resource-name: "deployment/udacityp5-deployment"
           get-rollout-status: true
           show-kubectl-command: true
+      - kubernetes/create-or-update-resource:
+          resource-file-path: ".circleci/files/service.yml"
+          get-rollout-status: true
+          show-kubectl-command: true
 
 workflows:
   default:
     jobs:
-      # - build
-      # - build_infras
-      - build_image
+      - lint
+      # - build_infras:
+      #     requires:
+      #       - "lint"
+      - build_image:
+          requires:
+            - "lint"
       - deploy_application:
           requires:
             - "build_image"
