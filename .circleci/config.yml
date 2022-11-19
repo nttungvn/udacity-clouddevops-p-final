@@ -4,7 +4,7 @@ orbs:
   kubernetes: circleci/kubernetes@0.3.0
   aws-cli: circleci/aws-cli@3.1
 jobs:         
-  build:
+  test_dockerfile:
     docker:
     # Use the same Docker base as the project
     - image: python:3.7.3-stretch
@@ -33,6 +33,16 @@ jobs:
         command: |
           . venv/bin/activate
           make lint 
+  build_image:
+    executor: docker
+    steps:
+      - setup_remote_docker
+      - checkout
+      - docker/check
+      - docker/build:
+          image: tungntvn/udacityp5
+      - docker/oush:
+          image: tungntvn/udacityp5
   build_infras:
     docker:
       - image: cimg/python:3.11.0
@@ -51,4 +61,5 @@ workflows:
   default:
     jobs:
       # - build
-      - build_infras
+      # - build_infras
+      - build_image
